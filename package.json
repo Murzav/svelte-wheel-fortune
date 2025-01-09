@@ -1,1 +1,22 @@
-ewogICJuYW1lIjogInN2ZWx0ZS13aGVlbC1mb3J0dW5lIiwKICAicHJpdmF0ZSI6IHRydWUsCiAgInZlcnNpb24iOiAiMC4wLjEiLAogICJ0eXBlIjogIm1vZHVsZSIsCiAgInNjcmlwdHMiOiB7CiAgICAiZGV2IjogInZpdGUiLAogICAgImJ1aWxkIjogInZpdGUgYnVpbGQiLAogICAgInByZXZpZXciOiAidml0ZSBwcmV2aWV3IiwKICAgICJjaGVjayI6ICJzdmVsdGUtY2hlY2sgLS10c2NvbmZpZyAuL3RzY29uZmlnLmpzb24iCiAgfSwKICAiZGV2RGVwZW5kZW5jaWVzIjogewogICAgIkBzdmVsdGVqcy9raXQiOiAiXjIuMC4wIiwKICAgICJAc3ZlbHRlanMvdml0ZS1wbHVnaW4tc3ZlbHRlIjogIl4zLjAuMCIsCiAgICAiQHRzY29uZmlnL3N2ZWx0ZSI6ICJeNS4wLjIiLAogICAgInN2ZWx0ZSI6ICJeNC4yLjgiLAogICAgInN2ZWx0ZS1jaGVjayI6ICJeMy42LjAiLAogICAgInRzbGliIjogIl4yLjYuMiIsCiAgICAidHlwZXNjcmlwdCI6ICJeNS4yLjIiLAogICAgInZpdGUiOiAiXjUuMC44IgogIH0KfQo=
+{
+  "name": "svelte-wheel-fortune",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "devDependencies": {
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@tsconfig/svelte": "^5.0.2",
+    "svelte": "^4.2.8",
+    "svelte-check": "^3.6.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  }
+}
