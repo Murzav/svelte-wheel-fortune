@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
 
-// Initial list of participants
 const initialParticipants = [
   'Bor',
   'Spesh',
@@ -13,3 +12,4 @@ const initialParticipants = [
 ];
 
 export const participants = writable<string[]>(initialParticipants);
+export const selectedParticipants = writable<string[]>([]);
