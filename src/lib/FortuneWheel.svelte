@@ -54,29 +54,30 @@
     style="transform: rotate({currentRotation}deg)"
   >
     {#each $participants as participant, i}
-      <g>
-        <path
-          d="M {CENTER} {CENTER} 
-             L {CENTER} 0 
-             A {CENTER} {CENTER} 0 0 1 
-             {CENTER + CENTER * Math.cos((i + 1) * segmentAngle * Math.PI / 180)} 
-             {CENTER + CENTER * Math.sin((i + 1) * segmentAngle * Math.PI / 180)} Z"
-          fill={i % 2 === 0 ? '#333' : '#222'}
-          stroke="rgba(255, 255, 255, 0.1)"
-          transform="rotate({i * segmentAngle} {CENTER} {CENTER})"
-        />
-        {@const coords = getTextCoordinates(i)}
-        <text
-          x={coords.x}
-          y={coords.y}
-          fill="white"
-          font-size="16"
-          text-anchor="middle"
-          transform="rotate({coords.rotation} {coords.x} {coords.y})"
-        >
-          {participant}
-        </text>
-      </g>
+      {#each [getTextCoordinates(i)] as coords}
+        <g>
+          <path
+            d="M {CENTER} {CENTER} 
+               L {CENTER} 0 
+               A {CENTER} {CENTER} 0 0 1 
+               {CENTER + CENTER * Math.cos((i + 1) * segmentAngle * Math.PI / 180)} 
+               {CENTER + CENTER * Math.sin((i + 1) * segmentAngle * Math.PI / 180)} Z"
+            fill={i % 2 === 0 ? '#333' : '#222'}
+            stroke="rgba(255, 255, 255, 0.1)"
+            transform="rotate({i * segmentAngle} {CENTER} {CENTER})"
+          />
+          <text
+            x={coords.x}
+            y={coords.y}
+            fill="white"
+            font-size="16"
+            text-anchor="middle"
+            transform="rotate({coords.rotation} {coords.x} {coords.y})"
+          >
+            {participant}
+          </text>
+        </g>
+      {/each}
     {/each}
   </svg>
   <div class="pointer" />
