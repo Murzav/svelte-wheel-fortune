@@ -5,37 +5,35 @@
   const dispatch = createEventDispatcher();
 
   export let isSpinning: boolean = false;
-
+  let selectedParticipant: string | null = null;
   let currentRotation = 0;
-  let selectedSegment = -1;
 
   $: segmentAngle = 360 / $participants.length;
 
-  function getRandomDegrees(): number {
-    const MIN_SPINS = 5;
-    const randomIndex = Math.floor(Math.random() * $participants.length);
-    const targetAngle = 360 - (randomIndex * segmentAngle + segmentAngle / 2);
-    const fullSpins = MIN_SPINS * 360;
-    return fullSpins + targetAngle;
+  function spin() {
+    if (isSpinning) {
+      const randomIndex = Math.floor(Math.random() * $participants.length);
+      selectedParticipant = $participants[randomIndex];
+      
+      const targetAngle = -(randomIndex * segmentAngle);
+      const fullSpins = 5 * 360; // 5 полных оборотов
+      const newRotation = fullSpins + targetAngle;
+      
+      currentRotation = currentRotation % 360; // Нормализуем текущий угол
+      currentRotation += newRotation; // Добавляем новое вращение
+
+      setTimeout(() => {
+        // Удаляем выбранного участника
+        participants.update(current => 
+          current.filter(p => p !== selectedParticipant)
+        );
+        dispatch('spinComplete');
+      }, 5000);
+    }
   }
 
   $: if (isSpinning) {
-    const targetRotation = currentRotation + getRandomDegrees();
-    currentRotation = targetRotation;
-
-    // Calculate selected segment after spin
-    setTimeout(() => {
-      const normalizedRotation = targetRotation % 360;
-      const selectedIndex = Math.floor((360 - normalizedRotation) / segmentAngle);
-      selectedSegment = selectedIndex % $participants.length;
-      
-      // Remove selected participant
-      participants.update(current => 
-        current.filter((_, index) => index !== selectedSegment)
-      );
-
-      dispatch('spinComplete');
-    }, 5000); // Match this with CSS animation duration
+    spin();
   }
 </script>
 
@@ -49,10 +47,10 @@
         class="segment"
         style="
           transform: rotate({i * segmentAngle}deg);
-          background: {i % 2 === 0 ? '#4CAF50' : '#45a049'};
+          background: {i % 2 === 0 ? '#333' : '#222'};
         "
       >
-        <div class="text" style="transform: rotate({segmentAngle / 2}deg)">
+        <div class="text">
           {participant}
         </div>
       </div>
@@ -60,6 +58,12 @@
   </div>
   <div class="pointer" />
 </div>
+
+{#if selectedParticipant && isSpinning}
+  <div class="selected-participant">
+    Выбран: {selectedParticipant}
+  </div>
+{/if}
 
 <style>
   .wheel-container {
@@ -74,39 +78,30 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background: #333;
     transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
     transform-origin: center center;
     border: 8px solid #222;
+    background: #333;
   }
 
   .segment {
     position: absolute;
-    width: 50%;
-    height: 50%;
-    transform-origin: bottom right;
-    left: 0;
-    top: 0;
-  }
-
-  .segment::before {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 200px 200px 0 0;
-    border-color: inherit;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+    transform-origin: center;
   }
 
   .text {
     position: absolute;
-    left: 35px;
-    top: 75px;
-    transform-origin: 0 0;
+    left: 65%;
+    top: 20%;
+    transform: rotate(90deg);
     color: white;
     font-weight: bold;
     font-size: 1.2rem;
+    transform-origin: left;
+    white-space: nowrap;
   }
 
   .pointer {
@@ -119,5 +114,18 @@
     background: #333;
     clip-path: polygon(50% 100%, 0 0, 100% 0);
     z-index: 2;
+  }
+
+  .selected-participant {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    z-index: 3;
   }
 </style>
