@@ -6,7 +6,6 @@
 
   export let isSpinning: boolean = false;
 
-  let wheelElement: HTMLDivElement;
   let currentRotation = 0;
   let selectedSegment = -1;
 
@@ -38,62 +37,56 @@
       dispatch('spinComplete');
     }, 5000); // Match this with CSS animation duration
   }
-
-  // Calculate positioning for each segment's text
-  function getTextStyle(index: number): string {
-    const angle = index * segmentAngle;
-    const rotation = angle + segmentAngle / 2;
-    return `transform: rotate(${rotation}deg) translateY(-160px) rotate(-${rotation}deg);`;
-  }
 </script>
 
-<div 
-  class="wheel-wrapper"
-  class:spinning={isSpinning}
->
+<div class="wheel-container">
   <div 
-    class="wheel" 
-    bind:this={wheelElement}
+    class="wheel"
     style="transform: rotate({currentRotation}deg)"
   >
     {#each $participants as participant, i}
       <div 
-        class="segment" 
-        style="transform: rotate({i * segmentAngle}deg); 
-               background: {i % 2 === 0 ? '#4CAF50' : '#45a049'};"
+        class="segment"
+        style="
+          transform: rotate({i * segmentAngle}deg);
+          background: {i % 2 === 0 ? '#4CAF50' : '#45a049'};
+        "
       >
-        <span class="segment-text" style={getTextStyle(i)}>{participant}</span>
+        <div class="text" style="transform: rotate({segmentAngle / 2}deg)">
+          {participant}
+        </div>
       </div>
     {/each}
   </div>
-  <div class="pointer"></div>
+  <div class="pointer" />
 </div>
 
 <style>
-  .wheel-wrapper {
+  .wheel-container {
     position: relative;
     width: 400px;
     height: 400px;
-    margin: 20px;
+    margin: 0 auto;
   }
 
   .wheel {
-    position: relative;
+    position: absolute;
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 10px solid #333;
+    background: #333;
     transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    transform-origin: center center;
+    border: 8px solid #222;
   }
 
   .segment {
     position: absolute;
     width: 50%;
     height: 50%;
-    transform-origin: 100% 100%;
-    left: 50%;
+    transform-origin: bottom right;
+    left: 0;
     top: 0;
-    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 
   .segment::before {
@@ -104,18 +97,16 @@
     border-style: solid;
     border-width: 200px 200px 0 0;
     border-color: inherit;
-    transform-origin: 0 100%;
   }
 
-  .segment-text {
+  .text {
     position: absolute;
-    left: 50%;
-    color: white;
-    font-size: 1rem;
-    font-weight: bold;
-    text-align: center;
-    white-space: nowrap;
+    left: 35px;
+    top: 75px;
     transform-origin: 0 0;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
   }
 
   .pointer {
@@ -123,9 +114,10 @@
     top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     background: #333;
     clip-path: polygon(50% 100%, 0 0, 100% 0);
+    z-index: 2;
   }
 </style>
