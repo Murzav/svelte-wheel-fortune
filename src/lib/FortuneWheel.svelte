@@ -18,7 +18,7 @@
   function createDisplayList(items: string[]) {
     if (!items.length) return [];
     const repeats = 5; // Количество повторений списка
-    let result = [];
+    let result: string[] = [];
     for (let i = 0; i < repeats; i++) {
       result = result.concat([...items]);
     }
