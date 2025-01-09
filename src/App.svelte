@@ -1,6 +1,6 @@
 <script lang="ts">
   import FortuneWheel from './lib/FortuneWheel.svelte';
-  import { participants } from './stores/participants';
+  import { participants, selectedParticipants } from './stores/participants';
 
   let isSpinning = false;
 
@@ -39,7 +39,18 @@
     </button>
 
     {#if $participants.length === 0}
-      <p class="reset-message">Refresh the page to reset the wheel</p>
+      <p class="reset-message">Обновите страницу, чтобы начать заново</p>
+    {/if}
+
+    {#if $selectedParticipants.length > 0}
+      <div class="selected-list">
+        <h2>Выбранные участники:</h2>
+        <ol>
+          {#each $selectedParticipants as participant}
+            <li>{participant}</li>
+          {/each}
+        </ol>
+      </div>
     {/if}
   </div>
 </main>
@@ -92,5 +103,32 @@
   .reset-message {
     color: #666;
     text-align: center;
+  }
+
+  .selected-list {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .selected-list h2 {
+    color: #333;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .selected-list ol {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+
+  .selected-list li {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
   }
 </style>
