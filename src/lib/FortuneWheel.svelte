@@ -6,29 +6,37 @@
 
   export let isSpinning: boolean = false;
   let currentRotation = 0;
+  const WHEEL_SIZE = 400;
+  const CENTER = WHEEL_SIZE / 2;
 
   $: segmentAngle = 360 / $participants.length;
+
+  // Функция для расчета координат текста
+  function getTextCoordinates(index: number) {
+    const angle = (index * segmentAngle + segmentAngle / 2) * (Math.PI / 180);
+    const radius = WHEEL_SIZE * 0.35; // 35% от радиуса круга
+    const x = CENTER + radius * Math.cos(angle);
+    const y = CENTER + radius * Math.sin(angle);
+    const rotation = (index * segmentAngle + segmentAngle / 2 + 90);
+    return { x, y, rotation };
+  }
 
   function spin() {
     if (isSpinning) {
       const randomIndex = Math.floor(Math.random() * $participants.length);
       const selected = $participants[randomIndex];
       
-      const targetAngle = -(randomIndex * segmentAngle);
-      const fullSpins = 5 * 360; // 5 полных оборотов
-      const newRotation = fullSpins + targetAngle;
+      const targetAngle = 360 * 5 + (360 - (randomIndex * segmentAngle));
+      currentRotation = 0; // Сбрасываем поворот перед новым вращением
       
-      currentRotation = currentRotation % 360;
-      currentRotation += newRotation;
+      // Добавляем небольшую задержку перед вращением
+      setTimeout(() => {
+        currentRotation = targetAngle;
+      }, 50);
 
       setTimeout(() => {
-        // Добавляем выбранного участника в список выбранных
         selectedParticipants.update(current => [...current, selected]);
-        
-        // Удаляем участника из колеса
-        participants.update(current => 
-          current.filter(p => p !== selected)
-        );
+        participants.update(current => current.filter(p => p !== selected));
         dispatch('spinComplete');
       }, 5000);
     }
@@ -40,24 +48,37 @@
 </script>
 
 <div class="wheel-container">
-  <div 
+  <svg 
+    viewBox="0 0 {WHEEL_SIZE} {WHEEL_SIZE}"
     class="wheel"
     style="transform: rotate({currentRotation}deg)"
   >
     {#each $participants as participant, i}
-      <div 
-        class="segment"
-        style="transform: rotate({i * segmentAngle}deg)"
-      >
-        <div 
-          class="segment-content"
-          style="background: {i % 2 === 0 ? '#333' : '#222'};"
+      <g>
+        <path
+          d="M {CENTER} {CENTER} 
+             L {CENTER} 0 
+             A {CENTER} {CENTER} 0 0 1 
+             {CENTER + CENTER * Math.cos((i + 1) * segmentAngle * Math.PI / 180)} 
+             {CENTER + CENTER * Math.sin((i + 1) * segmentAngle * Math.PI / 180)} Z"
+          fill={i % 2 === 0 ? '#333' : '#222'}
+          stroke="rgba(255, 255, 255, 0.1)"
+          transform="rotate({i * segmentAngle} {CENTER} {CENTER})"
+        />
+        {@const coords = getTextCoordinates(i)}
+        <text
+          x={coords.x}
+          y={coords.y}
+          fill="white"
+          font-size="16"
+          text-anchor="middle"
+          transform="rotate({coords.rotation} {coords.x} {coords.y})"
         >
-          <span class="text">{participant}</span>
-        </div>
-      </div>
+          {participant}
+        </text>
+      </g>
     {/each}
-  </div>
+  </svg>
   <div class="pointer" />
 </div>
 
@@ -70,43 +91,11 @@
   }
 
   .wheel {
-    position: absolute;
     width: 100%;
     height: 100%;
-    border-radius: 50%;
     transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
     transform-origin: center center;
-    border: 8px solid #222;
-    overflow: hidden;
-  }
-
-  .segment {
-    position: absolute;
-    width: 50%;
-    height: 100%;
-    transform-origin: right center;
-    left: 0;
-  }
-
-  .segment-content {
-    position: absolute;
-    width: 200%;
-    height: 50%;
-    left: -100%;
-    transform-origin: 100% 100%;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .text {
-    position: absolute;
-    left: 150%;
-    top: 35%;
-    transform: rotate(90deg);
-    color: white;
-    font-weight: bold;
-    font-size: 1.2rem;
-    transform-origin: 0 0;
-    white-space: nowrap;
+    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.3));
   }
 
   .pointer {
