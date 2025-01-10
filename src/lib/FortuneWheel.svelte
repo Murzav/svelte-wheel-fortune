@@ -287,7 +287,7 @@
     }
   }
 
-  .spinning ~ .slot-machine {
+  .slot-machine:has(.spinning) {
     animation: slot-glow 0.5s ease-in-out infinite;
   }
 
